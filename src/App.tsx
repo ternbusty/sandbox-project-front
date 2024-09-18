@@ -36,6 +36,9 @@ function App() {
         .then((userCredential) => {
           console.log("User signed in:", userCredential.user);
           setUser(userCredential.user);
+          userCredential.user.getIdToken().then((idToken) => {
+            localStorage.setItem("firebaseToken", idToken);
+          });
         })
         .catch((error) => {
           console.error("Error during Firebase login:", error);
@@ -47,18 +50,7 @@ function App() {
     } else {
       const savedToken = localStorage.getItem("firebaseToken");
       if (savedToken) {
-        const auth = getAuth(app);
-        signInWithCustomToken(auth, savedToken)
-          .then((userCredential) => {
-            setUser(userCredential.user);
-          })
-          .catch((error) => {
-            console.error("Error during Firebase login:", error);
-            window.location.href = `${backendurl}/login`;
-          })
-          .finally(() => {
-            setLoading(false);
-          });
+        setLoading(false);
       } else {
         window.location.href = `${backendurl}/login`;
         setLoading(false);
@@ -76,7 +68,7 @@ function App() {
 
   return (
     <div>
-      <h1>Welcome, {user.displayName || "User"}</h1>
+      <h1>Welcome!</h1>
       <button
         onClick={() => {
           const auth = getAuth(app);
